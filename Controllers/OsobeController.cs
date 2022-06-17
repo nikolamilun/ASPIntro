@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ASPIntro.Data;
 using ASPIntro.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ASPIntro.Controllers
 {
@@ -23,6 +24,18 @@ namespace ASPIntro.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Osoba.ToListAsync());
+        }
+
+        // GET: Osobe/Pretraga
+        public async Task<IActionResult> Pretraga()
+        {
+            return View();
+        }
+
+        // POST: Osobe/PrikaziRezultatePretrage
+        public async Task<IActionResult> PrikaziRezultatePretrage(String parametarPretrage)
+        {
+            return View("Index", await _context.Osoba.Where(j => j.Ime.Contains(parametarPretrage)).ToListAsync()) ;
         }
 
         // GET: Osobe/Details/5
@@ -44,6 +57,7 @@ namespace ASPIntro.Controllers
         }
 
         // GET: Osobe/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -52,6 +66,7 @@ namespace ASPIntro.Controllers
         // POST: Osobe/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BrTelefona,Ime,Id")] Osoba osoba)
@@ -66,6 +81,7 @@ namespace ASPIntro.Controllers
         }
 
         // GET: Osobe/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,6 +100,7 @@ namespace ASPIntro.Controllers
         // POST: Osobe/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("BrTelefona,Ime,Id")] Osoba osoba)
@@ -117,6 +134,7 @@ namespace ASPIntro.Controllers
         }
 
         // GET: Osobe/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -137,6 +155,7 @@ namespace ASPIntro.Controllers
         // POST: Osobe/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var osoba = await _context.Osoba.FindAsync(id);
