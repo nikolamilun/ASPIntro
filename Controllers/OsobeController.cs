@@ -27,9 +27,14 @@ namespace ASPIntro.Controllers
         }
 
         // GET: Osobe/Pretraga
-        public async Task<IActionResult> Pretraga()
+        public IActionResult Pretraga()
         {
             return View();
+        }
+
+        public async Task<IActionResult> MTSBrojevi()
+        {
+            return View("Index", await _context.Osoba.Where(j => j.BrTelefona.StartsWith("064") || j.BrTelefona.StartsWith("066")).ToListAsync());
         }
 
         // POST: Osobe/PrikaziRezultatePretrage
@@ -71,12 +76,16 @@ namespace ASPIntro.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BrTelefona,Ime,Id")] Osoba osoba)
         {
-            if (ModelState.IsValid)
+            string regEx1 = @"^(\+)(3816)([0-9]){6,9}$";
+
+            if (ModelState.IsValid && System.Text.RegularExpressions.Regex.IsMatch(osoba.BrTelefona, regEx1))
             {
                 _context.Add(osoba);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            else
+                return View("InputErrorView");
             return View(osoba);
         }
 
@@ -110,7 +119,9 @@ namespace ASPIntro.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            string regEx1 = @"^(\+)(3816)([0-9]){6,9}$";
+
+            if (ModelState.IsValid && System.Text.RegularExpressions.Regex.IsMatch(osoba.BrTelefona, regEx1))
             {
                 try
                 {
@@ -130,6 +141,8 @@ namespace ASPIntro.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            else
+                return View("InputErrorView");
             return View(osoba);
         }
 
